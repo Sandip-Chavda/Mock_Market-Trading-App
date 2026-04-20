@@ -2,3 +2,45 @@
 @import "tailwindcss/preflight.css" layer(base);
 @import "tailwindcss/utilities.css";
 @import "nativewind/theme";
+
+@layer utilities {
+  .bg-background {
+    background-color: #f8f9fa;
+  }
+  .bg-surface {
+    background-color: #ffffff;
+  }
+  .bg-primary {
+    background-color: #ff6b00;
+  }
+  .bg-primary-light {
+    background-color: #ff8c00;
+  }
+
+  .text-primary {
+    color: #ff6b00;
+  }
+  .text-primary-content {
+    color: #1a1a2e;
+  }
+  .text-secondary {
+    color: #6b7280;
+  }
+  .text-success {
+    color: #00a86b;
+  }
+  .text-danger {
+    color: #ff3d57;
+  }
+
+  .border-border {
+    border-color: #e8ecf0;
+  }
+
+  .bg-success {
+    background-color: #00a86b;
+  }
+  .bg-danger {
+    background-color: #ff3d57;
+  }
+}
