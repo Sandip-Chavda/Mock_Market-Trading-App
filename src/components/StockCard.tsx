@@ -1,5 +1,6 @@
 import { COLORS } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 
 export type Stock = {
@@ -12,16 +13,27 @@ export type Stock = {
 
 type Props = {
   stock: Stock;
-  onPress: (stock: Stock) => void;
 };
 
-export default function StockCard({ stock, onPress }: Props) {
+export default function StockCard({ stock }: Props) {
   const isPositive = stock.change >= 0;
+  const router = useRouter();
 
   return (
     <TouchableOpacity
       className="bg-surface rounded-xl p-4 mb-2.5 flex-row items-center justify-between border border-border"
-      onPress={() => onPress(stock)}
+      onPress={() =>
+        router.push({
+          pathname: "/stock/[symbol]",
+          params: {
+            symbol: stock.symbol,
+            name: stock.name,
+            price: stock.price,
+            change: stock.change,
+            changePercent: stock.changePercent,
+          },
+        })
+      }
       activeOpacity={0.7}
     >
       {/* Left */}

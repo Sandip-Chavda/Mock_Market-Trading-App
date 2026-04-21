@@ -130,12 +130,7 @@ export default function MarketScreen() {
             <Text className="text-secondary text-base">No stocks found</Text>
           </View>
         }
-        renderItem={({ item }) => (
-          <StockCard
-            stock={item}
-            onPress={(stock) => console.log("Pressed:", stock.symbol)}
-          />
-        )}
+        renderItem={({ item }) => <StockCard stock={item} />}
       />
     </View>
   );

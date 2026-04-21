@@ -60,6 +60,16 @@ export default function RootLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="stock/[symbol]"
+        options={{
+          title: "Stock Details",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="analytics-outline" color={color} size={size} />
+          ),
+          href: null, // Hide from tab bar
+        }}
+      />
     </Tabs>
   );
 }
