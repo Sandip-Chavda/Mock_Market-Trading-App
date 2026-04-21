@@ -36,6 +36,7 @@ type PortfolioState = {
     quantity: number,
   ) => string | null;
   updatePrices: (symbol: string, currentPrice: number) => void;
+  resetPortfolio: () => void;
 };
 
 export const usePortfolioStore = create<PortfolioState>((set, get) => ({
@@ -132,5 +133,13 @@ export const usePortfolioStore = create<PortfolioState>((set, get) => ({
         h.symbol === symbol ? { ...h, currentPrice } : h,
       ),
     }));
+  },
+
+  resetPortfolio: () => {
+    set({
+      cash: 100000,
+      holdings: [],
+      orders: [],
+    });
   },
 }));
