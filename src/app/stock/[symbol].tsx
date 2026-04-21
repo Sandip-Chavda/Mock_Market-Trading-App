@@ -1,8 +1,10 @@
 import { COLORS } from "@/constants/theme";
+import { usePortfolioStore } from "@/store/portfolioStore";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   ScrollView,
   StatusBar,
   Text,
@@ -25,6 +27,9 @@ export default function StockDetailScreen() {
     changePercent: string;
   }>();
   const router = useRouter();
+
+  const { buyStock, sellStock } = usePortfolioStore();
+
   const [selectedFilter, setSelectedFilter] = useState("1D");
   const [quantity, setQuantity] = useState(1);
 
@@ -35,6 +40,24 @@ export default function StockDetailScreen() {
   const totalCost = (priceNum * quantity).toLocaleString("en-IN", {
     minimumFractionDigits: 2,
   });
+
+  const handleBuy = () => {
+    const error = buyStock(symbol, name, priceNum, quantity);
+    if (error) {
+      Alert.alert("Cannot Buy", error);
+    } else {
+      Alert.alert("Success", `Bought ${quantity} share(s) of ${symbol}`);
+    }
+  };
+
+  const handleSell = () => {
+    const error = sellStock(symbol, name, priceNum, quantity);
+    if (error) {
+      Alert.alert("Cannot Sell", error);
+    } else {
+      Alert.alert("Success", `Sold ${quantity} share(s) of ${symbol}`);
+    }
+  };
 
   return (
     <View className="flex-1 bg-background">
@@ -189,10 +212,16 @@ export default function StockDetailScreen() {
 
       {/* Buy / Sell Buttons */}
       <View className="flex-row px-5 py-4 bg-surface border-t border-border">
-        <TouchableOpacity className="flex-1 bg-green-500 py-4 rounded-xl items-center mr-2">
+        <TouchableOpacity
+          className="flex-1 bg-green-500 py-4 rounded-xl items-center mr-2"
+          onPress={handleBuy}
+        >
           <Text className="text-white font-bold text-base">Buy</Text>
         </TouchableOpacity>
-        <TouchableOpacity className="flex-1 bg-danger py-4 rounded-xl items-center ml-2">
+        <TouchableOpacity
+          className="flex-1 bg-danger py-4 rounded-xl items-center ml-2"
+          onPress={handleSell}
+        >
           <Text className="text-white font-bold text-base">Sell</Text>
         </TouchableOpacity>
       </View>
