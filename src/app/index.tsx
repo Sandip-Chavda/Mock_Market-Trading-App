@@ -1,6 +1,7 @@
 import PortfolioSummaryCard from "@/components/PortfolioSummaryCard";
 import SearchBar from "@/components/SearchBar";
 import StockCard, { Stock } from "@/components/StockCard";
+import { usePortfolioStore } from "@/store/portfolioStore";
 import { useMemo, useState } from "react";
 import { FlatList, StatusBar, Text, View } from "react-native";
 
@@ -78,6 +79,8 @@ const MOCK_STOCKS: Stock[] = [
 ];
 
 export default function MarketScreen() {
+  const cash = usePortfolioStore((state) => state.cash);
+
   const [search, setSearch] = useState("");
 
   const filteredStocks = useMemo(() => {
@@ -119,7 +122,7 @@ export default function MarketScreen() {
         contentContainerStyle={{ padding: 20 }}
         ListHeaderComponent={
           <>
-            <PortfolioSummaryCard balance={100000} />
+            <PortfolioSummaryCard balance={cash} />
             <Text className="text-lg font-bold text-primary-content mb-3">
               Markets
             </Text>
