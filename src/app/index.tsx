@@ -1,73 +1,95 @@
-import { COLORS } from "@/constants/theme";
-import { Ionicons } from "@expo/vector-icons";
-import {
-  ScrollView,
-  StatusBar,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import PortfolioSummaryCard from "@/components/PortfolioSummaryCard";
+import SearchBar from "@/components/SearchBar";
+import StockCard, { Stock } from "@/components/StockCard";
+import { useMemo, useState } from "react";
+import { FlatList, StatusBar, Text, View } from "react-native";
 
-const MOCK_STOCKS = [
+const MOCK_STOCKS: Stock[] = [
   {
-    symbol: "AAPL",
-    name: "Apple Inc.",
-    price: 189.43,
-    change: 1.23,
-    changePercent: 0.65,
+    symbol: "RELIANCE",
+    name: "Reliance Industries Ltd.",
+    price: 2875.4,
+    change: 32.1,
+    changePercent: 1.13,
   },
   {
-    symbol: "GOOGL",
-    name: "Alphabet Inc.",
-    price: 141.8,
-    change: -0.92,
-    changePercent: -0.64,
+    symbol: "TCS",
+    name: "Tata Consultancy Services",
+    price: 3921.75,
+    change: -45.2,
+    changePercent: -1.14,
   },
   {
-    symbol: "MSFT",
-    name: "Microsoft Corp.",
-    price: 378.91,
-    change: 2.45,
-    changePercent: 0.65,
+    symbol: "HDFCBANK",
+    name: "HDFC Bank Ltd.",
+    price: 1642.3,
+    change: 18.9,
+    changePercent: 1.16,
   },
   {
-    symbol: "TSLA",
-    name: "Tesla Inc.",
-    price: 242.1,
-    change: -5.3,
-    changePercent: -2.14,
+    symbol: "INFY",
+    name: "Infosys Ltd.",
+    price: 1456.85,
+    change: -12.3,
+    changePercent: -0.84,
   },
   {
-    symbol: "AMZN",
-    name: "Amazon.com Inc.",
-    price: 178.25,
-    change: 3.1,
-    changePercent: 1.77,
+    symbol: "ICICIBANK",
+    name: "ICICI Bank Ltd.",
+    price: 1089.5,
+    change: 9.75,
+    changePercent: 0.9,
   },
   {
-    symbol: "NVDA",
-    name: "NVIDIA Corp.",
-    price: 875.4,
-    change: 12.3,
-    changePercent: 1.43,
+    symbol: "HINDUNILVR",
+    name: "Hindustan Unilever Ltd.",
+    price: 2341.6,
+    change: -8.4,
+    changePercent: -0.36,
   },
   {
-    symbol: "META",
-    name: "Meta Platforms",
-    price: 501.23,
-    change: -2.1,
-    changePercent: -0.42,
+    symbol: "SBIN",
+    name: "State Bank of India",
+    price: 812.45,
+    change: 11.2,
+    changePercent: 1.4,
   },
   {
-    symbol: "NFLX",
-    name: "Netflix Inc.",
-    price: 628.9,
-    change: 4.5,
-    changePercent: 0.72,
+    symbol: "BHARTIARTL",
+    name: "Bharti Airtel Ltd.",
+    price: 1678.9,
+    change: 22.35,
+    changePercent: 1.35,
+  },
+  {
+    symbol: "WIPRO",
+    name: "Wipro Ltd.",
+    price: 456.7,
+    change: -3.2,
+    changePercent: -0.7,
+  },
+  {
+    symbol: "BAJFINANCE",
+    name: "Bajaj Finance Ltd.",
+    price: 7234.15,
+    change: 87.5,
+    changePercent: 1.22,
   },
 ];
 
 export default function MarketScreen() {
+  const [search, setSearch] = useState("");
+
+  const filteredStocks = useMemo(() => {
+    if (!search.trim()) return MOCK_STOCKS;
+    const query = search.toLowerCase();
+    return MOCK_STOCKS.filter(
+      (s) =>
+        s.symbol.toLowerCase().includes(query) ||
+        s.name.toLowerCase().includes(query),
+    );
+  }, [search]);
+
   return (
     <View className="flex-1 bg-background">
       <StatusBar barStyle="dark-content" backgroundColor="#F8F9FA" />
@@ -87,92 +109,34 @@ export default function MarketScreen() {
             <Text className="text-white font-bold text-base">S</Text>
           </View>
         </View>
-
-        {/* Search Bar */}
-        <View className="flex-row items-center bg-background rounded-xl px-3 py-2.5 mt-4 border border-border">
-          <Ionicons
-            name="search-outline"
-            size={18}
-            color={COLORS.textSecondary}
-          />
-          <Text className="ml-2 text-secondary text-base">
-            Search stocks...
-          </Text>
-        </View>
+        <SearchBar value={search} onChangeText={setSearch} />
       </View>
 
-      <ScrollView
+      <FlatList
+        data={filteredStocks}
+        keyExtractor={(item) => item.symbol}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ padding: 20 }}
-      >
-        {/* Portfolio Summary Card */}
-        <View className="bg-primary rounded-2xl p-5 mb-6">
-          <Text className="text-white/80 text-sm font-medium">
-            Virtual Portfolio
-          </Text>
-          <Text className="text-white text-3xl font-extrabold mt-1">
-            $1,00,000.00
-          </Text>
-          <View className="flex-row items-center mt-2">
-            <Ionicons
-              name="trending-up"
-              size={16}
-              color="rgba(255,255,255,0.9)"
-            />
-            <Text className="text-white/90 text-sm ml-1">Starting Balance</Text>
+        ListHeaderComponent={
+          <>
+            <PortfolioSummaryCard balance={100000} />
+            <Text className="text-lg font-bold text-primary-content mb-3">
+              Markets
+            </Text>
+          </>
+        }
+        ListEmptyComponent={
+          <View className="items-center mt-10">
+            <Text className="text-secondary text-base">No stocks found</Text>
           </View>
-        </View>
-
-        {/* Market List */}
-        <Text className="text-lg font-bold text-primary-content mb-3">
-          Markets
-        </Text>
-
-        {MOCK_STOCKS.map((stock) => (
-          <TouchableOpacity
-            key={stock.symbol}
-            className="bg-surface rounded-xl p-4 mb-2.5 flex-row items-center justify-between border border-border"
-          >
-            {/* Left */}
-            <View className="flex-row items-center">
-              <View className="w-11 h-11 rounded-lg bg-background items-center justify-center mr-3 border border-border">
-                <Text className="text-sm font-bold text-primary">
-                  {stock.symbol.slice(0, 2)}
-                </Text>
-              </View>
-              <View>
-                <Text className="text-base font-bold text-primary-content">
-                  {stock.symbol}
-                </Text>
-                <Text className="text-xs text-secondary mt-0.5">
-                  {stock.name}
-                </Text>
-              </View>
-            </View>
-
-            {/* Right */}
-            <View className="items-end">
-              <Text className="text-base font-bold text-primary-content">
-                ${stock.price.toFixed(2)}
-              </Text>
-              <View
-                className={`flex-row items-center px-2 py-0.5 rounded-lg mt-1 ${stock.change >= 0 ? "bg-green-100" : "bg-red-100"}`}
-              >
-                <Ionicons
-                  name={stock.change >= 0 ? "arrow-up" : "arrow-down"}
-                  size={11}
-                  color={stock.change >= 0 ? COLORS.green : COLORS.red}
-                />
-                <Text
-                  className={`text-xs font-semibold ml-0.5 ${stock.change >= 0 ? "text-success" : "text-danger"}`}
-                >
-                  {Math.abs(stock.changePercent).toFixed(2)}%
-                </Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+        }
+        renderItem={({ item }) => (
+          <StockCard
+            stock={item}
+            onPress={(stock) => console.log("Pressed:", stock.symbol)}
+          />
+        )}
+      />
     </View>
   );
 }
