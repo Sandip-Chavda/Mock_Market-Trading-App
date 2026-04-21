@@ -29,6 +29,10 @@ export default function StockDetailScreen() {
   const router = useRouter();
 
   const { buyStock, sellStock } = usePortfolioStore();
+  const holdings = usePortfolioStore((state) => state.holdings);
+
+  const currentHolding = holdings.find((h) => h.symbol === symbol);
+  const ownedQuantity = currentHolding?.quantity ?? 0;
 
   const [selectedFilter, setSelectedFilter] = useState("1D");
   const [quantity, setQuantity] = useState(1);
@@ -174,6 +178,22 @@ export default function StockDetailScreen() {
             <Text className="text-base font-bold text-primary-content mb-3">
               Order
             </Text>
+
+            {/* Owned quantity info */}
+            <View className="flex-row items-center justify-between mb-3 bg-background rounded-xl px-3 py-2.5 border border-border">
+              <View className="flex-row items-center">
+                <Ionicons
+                  name="layers-outline"
+                  size={16}
+                  color={COLORS.primary}
+                />
+                <Text className="text-sm text-secondary ml-2">You own</Text>
+              </View>
+              <Text className="text-sm font-bold text-primary-content">
+                {ownedQuantity > 0 ? `${ownedQuantity} shares` : "No shares"}
+              </Text>
+            </View>
+
             <View className="flex-row items-center justify-between">
               <Text className="text-secondary text-sm">Quantity</Text>
               <View className="flex-row items-center">
@@ -213,16 +233,16 @@ export default function StockDetailScreen() {
       {/* Buy / Sell Buttons */}
       <View className="flex-row px-5 py-4 bg-surface border-t border-border">
         <TouchableOpacity
-          className="flex-1 bg-green-500 py-4 rounded-xl items-center mr-2"
-          onPress={handleBuy}
-        >
-          <Text className="text-white font-bold text-base">Buy</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          className="flex-1 bg-danger py-4 rounded-xl items-center ml-2"
+          className="flex-1 bg-danger py-4 rounded-xl items-center mr-2"
           onPress={handleSell}
         >
           <Text className="text-white font-bold text-base">Sell</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          className="flex-1 bg-green-500 py-4 rounded-xl items-center ml-2"
+          onPress={handleBuy}
+        >
+          <Text className="text-white font-bold text-base">Buy</Text>
         </TouchableOpacity>
       </View>
     </View>

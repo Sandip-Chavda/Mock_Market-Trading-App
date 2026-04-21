@@ -1,4 +1,5 @@
 import { COLORS } from "@/constants/theme";
+import { usePortfolioStore } from "@/store/portfolioStore";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -18,6 +19,10 @@ type Props = {
 export default function StockCard({ stock }: Props) {
   const isPositive = stock.change >= 0;
   const router = useRouter();
+
+  const holdings = usePortfolioStore((state) => state.holdings);
+  const ownedHolding = holdings.find((h) => h.symbol === stock.symbol);
+  const ownedQuantity = ownedHolding?.quantity ?? 0;
 
   return (
     <TouchableOpacity
@@ -50,6 +55,13 @@ export default function StockCard({ stock }: Props) {
           <Text className="text-xs text-secondary mt-0.5" numberOfLines={1}>
             {stock.name}
           </Text>
+          {ownedQuantity > 0 && (
+            <View className="flex-row items-center bg-orange-50 px-2 py-0.5 rounded-lg mt-1 self-start border border-primary/20">
+              <Text className="text-primary text-xs font-semibold">
+                {ownedQuantity} owned
+              </Text>
+            </View>
+          )}
         </View>
       </View>
 
