@@ -1,5 +1,6 @@
 import { COLORS } from "@/constants/theme";
 import { Holding, usePortfolioStore } from "@/store/portfolioStore";
+import { formatINR } from "@/utils/formatCurrency";
 import { Ionicons } from "@expo/vector-icons";
 import { FlatList, StatusBar, Text, View } from "react-native";
 
@@ -30,8 +31,7 @@ function HoldingCard({ holding }: { holding: Holding }) {
         </View>
         <View className="items-end">
           <Text className="text-base font-bold text-primary-content">
-            ₹
-            {currentValue.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+            ₹{formatINR(currentValue)}
           </Text>
           <View
             className={`flex-row items-center px-2 py-0.5 rounded-lg mt-1 ${isProfit ? "bg-green-100" : "bg-red-100"}`}
@@ -56,13 +56,13 @@ function HoldingCard({ holding }: { holding: Holding }) {
         <View>
           <Text className="text-xs text-secondary">Avg. Price</Text>
           <Text className="text-sm font-semibold text-primary-content mt-0.5">
-            ₹{holding.avgPrice.toFixed(2)}
+            ₹{formatINR(holding.avgPrice)}
           </Text>
         </View>
         <View>
           <Text className="text-xs text-secondary">Current Price</Text>
           <Text className="text-sm font-semibold text-primary-content mt-0.5">
-            ₹{holding.currentPrice.toFixed(2)}
+            ₹{formatINR(holding.currentPrice)}
           </Text>
         </View>
         <View className="items-end">
@@ -70,10 +70,7 @@ function HoldingCard({ holding }: { holding: Holding }) {
           <Text
             className={`text-sm font-semibold mt-0.5 ${isProfit ? "text-success" : "text-danger"}`}
           >
-            {isProfit ? "+" : "-"}₹
-            {Math.abs(pnl).toLocaleString("en-IN", {
-              minimumFractionDigits: 2,
-            })}
+            {isProfit ? "+" : "-"}₹{formatINR(Math.abs(pnl))}
           </Text>
         </View>
       </View>
@@ -106,10 +103,7 @@ function PortfolioHeader() {
           Total Portfolio Value
         </Text>
         <Text className="text-white text-3xl font-extrabold mt-1">
-          ₹
-          {totalPortfolioValue.toLocaleString("en-IN", {
-            minimumFractionDigits: 2,
-          })}
+          ₹{formatINR(totalPortfolioValue)}
         </Text>
         <View className="flex-row items-center mt-2">
           <Ionicons
@@ -118,11 +112,8 @@ function PortfolioHeader() {
             color="rgba(255,255,255,0.9)"
           />
           <Text className="text-white/90 text-sm ml-1">
-            {isProfit ? "+" : "-"}₹
-            {Math.abs(totalPnl).toLocaleString("en-IN", {
-              minimumFractionDigits: 2,
-            })}{" "}
-            ({Math.abs(totalPnlPercent).toFixed(2)}%)
+            {isProfit ? "+" : "-"}₹ ₹{formatINR(Math.abs(totalPnl))} (
+            {Math.abs(totalPnlPercent).toFixed(2)}%)
           </Text>
         </View>
       </View>
@@ -131,16 +122,13 @@ function PortfolioHeader() {
         <View className="flex-1 bg-surface rounded-xl p-4 border border-border">
           <Text className="text-xs text-secondary">Invested</Text>
           <Text className="text-base font-bold text-primary-content mt-1">
-            ₹
-            {investedValue.toLocaleString("en-IN", {
-              minimumFractionDigits: 2,
-            })}
+            ₹{formatINR(investedValue)}
           </Text>
         </View>
         <View className="flex-1 bg-surface rounded-xl p-4 border border-border">
           <Text className="text-xs text-secondary">Available Cash</Text>
           <Text className="text-base font-bold text-primary-content mt-1">
-            ₹{cash.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+            ₹{formatINR(cash)}
           </Text>
         </View>
       </View>

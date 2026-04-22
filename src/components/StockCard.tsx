@@ -1,5 +1,6 @@
 import { COLORS } from "@/constants/theme";
 import { usePortfolioStore } from "@/store/portfolioStore";
+import { formatINR } from "@/utils/formatCurrency";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -68,7 +69,7 @@ export default function StockCard({ stock }: Props) {
       {/* Right */}
       <View className="items-end">
         <Text className="text-base font-bold text-primary-content">
-          ₹{stock.price.toFixed(2)}
+          ₹{formatINR(stock.price)}
         </Text>
         <View
           className={`flex-row items-center px-2 py-0.5 rounded-lg mt-1 ${isPositive ? "bg-green-100" : "bg-red-100"}`}

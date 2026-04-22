@@ -1,97 +1,60 @@
 import PortfolioSummaryCard from "@/components/PortfolioSummaryCard";
 import SearchBar from "@/components/SearchBar";
 import StockCard, { Stock } from "@/components/StockCard";
+import { COLORS } from "@/constants/theme";
 import { usePortfolioStore } from "@/store/portfolioStore";
-import { useMemo, useState } from "react";
-import { FlatList, StatusBar, Text, View } from "react-native";
+import { fetchAllStocks } from "@/utils/marketData";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  StatusBar,
+  Text,
+  View,
+} from "react-native";
 
-const MOCK_STOCKS: Stock[] = [
-  {
-    symbol: "RELIANCE",
-    name: "Reliance Industries Ltd.",
-    price: 2875.4,
-    change: 32.1,
-    changePercent: 1.13,
-  },
-  {
-    symbol: "TCS",
-    name: "Tata Consultancy Services",
-    price: 3921.75,
-    change: -45.2,
-    changePercent: -1.14,
-  },
-  {
-    symbol: "HDFCBANK",
-    name: "HDFC Bank Ltd.",
-    price: 1642.3,
-    change: 18.9,
-    changePercent: 1.16,
-  },
-  {
-    symbol: "INFY",
-    name: "Infosys Ltd.",
-    price: 1456.85,
-    change: -12.3,
-    changePercent: -0.84,
-  },
-  {
-    symbol: "ICICIBANK",
-    name: "ICICI Bank Ltd.",
-    price: 1089.5,
-    change: 9.75,
-    changePercent: 0.9,
-  },
-  {
-    symbol: "HINDUNILVR",
-    name: "Hindustan Unilever Ltd.",
-    price: 2341.6,
-    change: -8.4,
-    changePercent: -0.36,
-  },
-  {
-    symbol: "SBIN",
-    name: "State Bank of India",
-    price: 812.45,
-    change: 11.2,
-    changePercent: 1.4,
-  },
-  {
-    symbol: "BHARTIARTL",
-    name: "Bharti Airtel Ltd.",
-    price: 1678.9,
-    change: 22.35,
-    changePercent: 1.35,
-  },
-  {
-    symbol: "WIPRO",
-    name: "Wipro Ltd.",
-    price: 456.7,
-    change: -3.2,
-    changePercent: -0.7,
-  },
-  {
-    symbol: "BAJFINANCE",
-    name: "Bajaj Finance Ltd.",
-    price: 7234.15,
-    change: 87.5,
-    changePercent: 1.22,
-  },
-];
+const POLL_INTERVAL = 30000; // 30 seconds
 
 export default function MarketScreen() {
   const cash = usePortfolioStore((state) => state.cash);
-
+  const [stocks, setStocks] = useState<Stock[]>([]);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+
+  const loadStocks = useCallback(async () => {
+    try {
+      const data = await fetchAllStocks();
+      if (data.length > 0) {
+        setStocks(data);
+        setError(false);
+        setLastUpdated(new Date());
+      } else {
+        setError(true);
+      }
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadStocks();
+    const interval = setInterval(loadStocks, POLL_INTERVAL);
+    return () => clearInterval(interval);
+  }, [loadStocks]);
 
   const filteredStocks = useMemo(() => {
-    if (!search.trim()) return MOCK_STOCKS;
+    if (!search.trim()) return stocks;
     const query = search.toLowerCase();
-    return MOCK_STOCKS.filter(
+    return stocks.filter(
       (s) =>
         s.symbol.toLowerCase().includes(query) ||
         s.name.toLowerCase().includes(query),
     );
-  }, [search]);
+  }, [search, stocks]);
 
   return (
     <View className="flex-1 bg-background">
@@ -113,28 +76,56 @@ export default function MarketScreen() {
           </View>
         </View>
         <SearchBar value={search} onChangeText={setSearch} />
+        {lastUpdated && (
+          <Text className="text-xs text-secondary mt-2">
+            Updated{" "}
+            {lastUpdated.toLocaleTimeString("en-IN", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </Text>
+        )}
       </View>
 
-      <FlatList
-        data={filteredStocks}
-        keyExtractor={(item) => item.symbol}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ padding: 20 }}
-        ListHeaderComponent={
-          <>
-            <PortfolioSummaryCard balance={cash} />
-            <Text className="text-lg font-bold text-primary-content mb-3">
-              Markets
-            </Text>
-          </>
-        }
-        ListEmptyComponent={
-          <View className="items-center mt-10">
-            <Text className="text-secondary text-base">No stocks found</Text>
-          </View>
-        }
-        renderItem={({ item }) => <StockCard stock={item} />}
-      />
+      {/* Loading State */}
+      {loading ? (
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text className="text-secondary text-sm mt-3">
+            Fetching live prices...
+          </Text>
+        </View>
+      ) : error ? (
+        <View className="flex-1 items-center justify-center px-10">
+          <Text className="text-primary-content font-bold text-lg text-center">
+            Unable to fetch prices
+          </Text>
+          <Text className="text-secondary text-sm mt-2 text-center">
+            Check your internet connection or API key
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filteredStocks}
+          keyExtractor={(item) => item.symbol}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ padding: 20 }}
+          ListHeaderComponent={
+            <>
+              <PortfolioSummaryCard balance={cash} />
+              <Text className="text-lg font-bold text-primary-content mb-3">
+                Live Markets
+              </Text>
+            </>
+          }
+          ListEmptyComponent={
+            <View className="items-center mt-10">
+              <Text className="text-secondary text-base">No stocks found</Text>
+            </View>
+          }
+          renderItem={({ item }) => <StockCard stock={item} />}
+        />
+      )}
     </View>
   );
 }

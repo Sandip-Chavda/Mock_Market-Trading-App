@@ -1,5 +1,6 @@
 import { COLORS } from "@/constants/theme";
 import { Order, usePortfolioStore } from "@/store/portfolioStore";
+import { formatINR } from "@/utils/formatCurrency";
 import { Ionicons } from "@expo/vector-icons";
 import { FlatList, StatusBar, Text, View } from "react-native";
 
@@ -62,7 +63,7 @@ function OrderCard({ order }: { order: Order }) {
         <View>
           <Text className="text-xs text-secondary">Price</Text>
           <Text className="text-sm font-semibold text-primary-content mt-0.5">
-            ₹{order.price.toFixed(2)}
+            ₹{formatINR(order.price)}
           </Text>
         </View>
         <View className="items-end">
@@ -70,8 +71,7 @@ function OrderCard({ order }: { order: Order }) {
           <Text
             className={`text-sm font-semibold mt-0.5 ${isBuy ? "text-danger" : "text-success"}`}
           >
-            {isBuy ? "-" : "+"}₹
-            {order.total.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+            {isBuy ? "-" : "+"}₹{formatINR(order.total)}
           </Text>
         </View>
       </View>

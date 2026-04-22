@@ -1,5 +1,6 @@
 import { COLORS } from "@/constants/theme";
 import { usePortfolioStore } from "@/store/portfolioStore";
+import { formatINR } from "@/utils/formatCurrency";
 import { Ionicons } from "@expo/vector-icons";
 import {
   Alert,
@@ -121,10 +122,7 @@ export default function ProfileScreen() {
             <View className="items-center flex-1">
               <Text className="text-xs text-secondary">Total Value</Text>
               <Text className="text-base font-bold text-primary-content mt-1">
-                ₹
-                {totalPortfolioValue.toLocaleString("en-IN", {
-                  minimumFractionDigits: 0,
-                })}
+                ₹{formatINR(totalPortfolioValue, 0)}
               </Text>
             </View>
             <View className="w-px bg-border" />
@@ -133,10 +131,7 @@ export default function ProfileScreen() {
               <Text
                 className={`text-base font-bold mt-1 ${isProfit ? "text-success" : "text-danger"}`}
               >
-                {isProfit ? "+" : "-"}₹
-                {Math.abs(totalPnl).toLocaleString("en-IN", {
-                  minimumFractionDigits: 0,
-                })}
+                {isProfit ? "+" : "-"}₹{formatINR(Math.abs(totalPnl), 0)}
               </Text>
             </View>
             <View className="w-px bg-border" />
@@ -163,7 +158,7 @@ export default function ProfileScreen() {
           <SettingRow
             icon="wallet-outline"
             label="Available Cash"
-            value={`₹${cash.toLocaleString("en-IN", { minimumFractionDigits: 2 })}`}
+            value={`₹${formatINR(cash)}`}
           />
           <SettingRow
             icon="layers-outline"

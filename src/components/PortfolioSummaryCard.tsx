@@ -1,3 +1,4 @@
+import { formatINR } from "@/utils/formatCurrency";
 import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
 
@@ -16,7 +17,7 @@ export default function PortfolioSummaryCard({
         Virtual Portfolio
       </Text>
       <Text className="text-white text-3xl font-extrabold mt-1">
-        ₹{balance.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+        ₹{formatINR(balance)}
       </Text>
       <View className="flex-row items-center mt-2">
         <Ionicons name="trending-up" size={16} color="rgba(255,255,255,0.9)" />

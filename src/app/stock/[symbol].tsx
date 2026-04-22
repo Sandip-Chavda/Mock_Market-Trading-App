@@ -1,5 +1,6 @@
 import { COLORS } from "@/constants/theme";
 import { usePortfolioStore } from "@/store/portfolioStore";
+import { formatINR } from "@/utils/formatCurrency";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
@@ -41,9 +42,12 @@ export default function StockDetailScreen() {
   const priceNum = parseFloat(price);
   const changeNum = parseFloat(change);
   const changePercentNum = parseFloat(changePercent);
-  const totalCost = (priceNum * quantity).toLocaleString("en-IN", {
-    minimumFractionDigits: 2,
-  });
+
+  // const totalCost = (priceNum * quantity).toLocaleString("en-IN", {
+  //   minimumFractionDigits: 2,
+  // });
+
+  const totalCost = formatINR(priceNum * quantity);
 
   const handleBuy = () => {
     const error = buyStock(symbol, name, priceNum, quantity);
@@ -91,7 +95,7 @@ export default function StockDetailScreen() {
         <View className="px-5 pt-5">
           {/* Price */}
           <Text className="text-4xl font-extrabold text-primary-content">
-            ₹{priceNum.toFixed(2)}
+            ₹{formatINR(priceNum)}
           </Text>
           <View
             className={`flex-row items-center mt-1 self-start px-2 py-1 rounded-lg ${isPositive ? "bg-green-100" : "bg-red-100"}`}
@@ -104,7 +108,7 @@ export default function StockDetailScreen() {
             <Text
               className={`text-sm font-semibold ml-1 ${isPositive ? "text-success" : "text-danger"}`}
             >
-              ₹{Math.abs(changeNum).toFixed(2)} (
+              ₹{formatINR(Math.abs(changeNum))} (
               {Math.abs(changePercentNum).toFixed(2)}%)
             </Text>
           </View>
@@ -150,25 +154,25 @@ export default function StockDetailScreen() {
             <View className="flex-row justify-between mb-2">
               <Text className="text-secondary text-sm">Open</Text>
               <Text className="text-primary-content text-sm font-semibold">
-                ₹{(priceNum - changeNum).toFixed(2)}
+                ₹{formatINR(priceNum - changeNum)}
               </Text>
             </View>
             <View className="flex-row justify-between mb-2">
               <Text className="text-secondary text-sm">Day High</Text>
               <Text className="text-primary-content text-sm font-semibold">
-                ₹{(priceNum * 1.02).toFixed(2)}
+                ₹{formatINR(priceNum * 1.02)}
               </Text>
             </View>
             <View className="flex-row justify-between mb-2">
               <Text className="text-secondary text-sm">Day Low</Text>
               <Text className="text-primary-content text-sm font-semibold">
-                ₹{(priceNum * 0.98).toFixed(2)}
+                ₹{formatINR(priceNum * 0.98)}
               </Text>
             </View>
             <View className="flex-row justify-between">
               <Text className="text-secondary text-sm">52W High</Text>
               <Text className="text-primary-content text-sm font-semibold">
-                ₹{(priceNum * 1.35).toFixed(2)}
+                ₹{formatINR(priceNum * 1.35)}
               </Text>
             </View>
           </View>
