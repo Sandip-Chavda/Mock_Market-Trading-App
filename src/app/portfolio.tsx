@@ -54,7 +54,7 @@ function HoldingCard({ holding }: { holding: Holding }) {
 
       <View className="flex-row justify-between">
         <View>
-          <Text className="text-xs text-secondary">Avg. Price</Text>
+          <Text className="text-xs text-secondary">Bought At</Text>
           <Text className="text-sm font-semibold text-primary-content mt-0.5">
             ₹{formatINR(holding.avgPrice)}
           </Text>

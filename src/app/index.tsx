@@ -4,6 +4,7 @@ import StockCard, { Stock } from "@/components/StockCard";
 import { COLORS } from "@/constants/theme";
 import { usePortfolioStore } from "@/store/portfolioStore";
 import { fetchAllStocks } from "@/utils/marketData";
+import { isUSMarketOpen } from "@/utils/marketStatus";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -17,6 +18,9 @@ const POLL_INTERVAL = 30000; // 30 seconds
 
 export default function MarketScreen() {
   const cash = usePortfolioStore((state) => state.cash);
+
+  const marketOpen = isUSMarketOpen();
+
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
@@ -77,13 +81,27 @@ export default function MarketScreen() {
         </View>
         <SearchBar value={search} onChangeText={setSearch} />
         {lastUpdated && (
-          <Text className="text-xs text-secondary mt-2">
-            Updated{" "}
-            {lastUpdated.toLocaleTimeString("en-IN", {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </Text>
+          <View className="flex-row items-center justify-between mt-2">
+            <Text className="text-xs text-secondary">
+              Updated{" "}
+              {lastUpdated.toLocaleTimeString("en-IN", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </Text>
+            <View
+              className={`flex-row items-center px-2 py-0.5 rounded-lg ${marketOpen ? "bg-green-100" : "bg-red-100"}`}
+            >
+              <View
+                className={`w-1.5 h-1.5 rounded-full mr-1.5 ${marketOpen ? "bg-green-500" : "bg-red-400"}`}
+              />
+              <Text
+                className={`text-xs font-semibold ${marketOpen ? "text-success" : "text-danger"}`}
+              >
+                USA {marketOpen ? "Market Open" : "Market Closed"}
+              </Text>
+            </View>
+          </View>
         )}
       </View>
 
