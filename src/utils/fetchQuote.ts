@@ -9,6 +9,14 @@ export type Quote = {
   o: number; // open USD
 };
 
+export type CandleData = {
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  timestamp: number;
+};
+
 export async function fetchUSDINR(): Promise<number> {
   try {
     const response = await fetch(
@@ -19,7 +27,7 @@ export async function fetchUSDINR(): Promise<number> {
     if (!data.c || data.c === 0) return 83.5;
     return data.c;
   } catch {
-    return 83.5; // fallback rate
+    return 83.5;
   }
 }
 

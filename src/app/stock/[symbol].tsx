@@ -1,23 +1,23 @@
 import { COLORS } from "@/constants/theme";
 import { usePortfolioStore } from "@/store/portfolioStore";
+import { CandleData, fetchUSDINR } from "@/utils/fetchQuote";
 import { formatINR } from "@/utils/formatCurrency";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   ScrollView,
   StatusBar,
   Text,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from "react-native";
+import { CandlestickChart, LineChart } from "react-native-wagmi-charts";
 
 const TIME_FILTERS = ["1D", "1W", "1M", "3M", "1Y"];
-
-const MOCK_CHART_BARS = [
-  40, 65, 45, 70, 55, 80, 60, 75, 50, 85, 65, 90, 70, 88, 72,
-];
 
 export default function StockDetailScreen() {
   const { symbol, name, price, change, changePercent } = useLocalSearchParams<{
@@ -30,24 +30,34 @@ export default function StockDetailScreen() {
   const router = useRouter();
 
   const { buyStock, sellStock } = usePortfolioStore();
+  const { width } = useWindowDimensions();
   const holdings = usePortfolioStore((state) => state.holdings);
-
-  const currentHolding = holdings.find((h) => h.symbol === symbol);
-  const ownedQuantity = currentHolding?.quantity ?? 0;
 
   const [selectedFilter, setSelectedFilter] = useState("1D");
   const [quantity, setQuantity] = useState(1);
+  const [candles, setCandles] = useState<CandleData[]>([]);
+  const [chartType, setChartType] = useState<"candle" | "line">("candle");
+  const [chartLoading, setChartLoading] = useState(true);
+  const [usdInr, setUsdInr] = useState(83.5);
+
+  const currentHolding = holdings.find((h) => h.symbol === symbol);
+  const ownedQuantity = currentHolding?.quantity ?? 0;
 
   const isPositive = parseFloat(change) >= 0;
   const priceNum = parseFloat(price);
   const changeNum = parseFloat(change);
   const changePercentNum = parseFloat(changePercent);
-
-  // const totalCost = (priceNum * quantity).toLocaleString("en-IN", {
-  //   minimumFractionDigits: 2,
-  // });
-
   const totalCost = formatINR(priceNum * quantity);
+
+  useEffect(() => {
+    const loadChart = async () => {
+      setChartLoading(true);
+      const rate = await fetchUSDINR();
+      setUsdInr(rate);
+      setChartLoading(false);
+    };
+    loadChart();
+  }, [selectedFilter, symbol]);
 
   const handleBuy = () => {
     const error = buyStock(symbol, name, priceNum, quantity);
@@ -113,7 +123,7 @@ export default function StockDetailScreen() {
             </Text>
           </View>
 
-          {/* Time Filters */}
+          {/* Time Filter */}
           <View className="flex-row mt-5 bg-surface rounded-xl p-1 border border-border">
             {TIME_FILTERS.map((filter) => (
               <TouchableOpacity
@@ -130,23 +140,123 @@ export default function StockDetailScreen() {
             ))}
           </View>
 
-          {/* Chart */}
-          <View className="bg-surface rounded-2xl p-4 mt-4 border border-border">
-            <View className="flex-row items-end justify-between h-32">
-              {MOCK_CHART_BARS.map((height, index) => (
-                <View
-                  key={index}
-                  style={{ height: `${height}%` as any }}
-                  className={`w-4 rounded-sm ${isPositive ? "bg-green-400" : "bg-red-400"}`}
-                />
-              ))}
-            </View>
-            <Text className="text-xs text-secondary text-center mt-3">
-              Mock chart — live data coming soon
-            </Text>
+          {/* Chart Type Toggle */}
+          <View className="flex-row mt-3 bg-surface rounded-xl p-1 border border-border">
+            <TouchableOpacity
+              className={`flex-1 py-2 rounded-lg items-center flex-row justify-center gap-1 ${chartType === "candle" ? "bg-primary" : ""}`}
+              onPress={() => setChartType("candle")}
+            >
+              <Ionicons
+                name="bar-chart-outline"
+                size={14}
+                color={chartType === "candle" ? "#fff" : COLORS.textSecondary}
+              />
+              <Text
+                className={`text-xs font-semibold ml-1 ${chartType === "candle" ? "text-white" : "text-secondary"}`}
+              >
+                Candle
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              className={`flex-1 py-2 rounded-lg items-center flex-row justify-center gap-1 ${chartType === "line" ? "bg-primary" : ""}`}
+              onPress={() => setChartType("line")}
+            >
+              <Ionicons
+                name="trending-up-outline"
+                size={14}
+                color={chartType === "line" ? "#fff" : COLORS.textSecondary}
+              />
+              <Text
+                className={`text-xs font-semibold ml-1 ${chartType === "line" ? "text-white" : "text-secondary"}`}
+              >
+                Line
+              </Text>
+            </TouchableOpacity>
           </View>
 
-          {/* Stock Stats */}
+          {/* Chart */}
+          <View className="bg-surface rounded-2xl p-4 mt-4 border border-border">
+            {chartLoading ? (
+              <View className="h-48 items-center justify-center">
+                <ActivityIndicator size="large" color={COLORS.primary} />
+                <Text className="text-secondary text-xs mt-2">
+                  Loading chart...
+                </Text>
+              </View>
+            ) : candles.length === 0 ? (
+              <View className="h-48 items-center justify-center">
+                <Text className="text-secondary text-sm">
+                  No chart data available
+                </Text>
+                <Text className="text-secondary text-xs mt-1">
+                  Market may be closed
+                </Text>
+              </View>
+            ) : chartType === "candle" ? (
+              <CandlestickChart.Provider
+                data={candles.map((c) => ({
+                  open: c.open * usdInr,
+                  high: c.high * usdInr,
+                  low: c.low * usdInr,
+                  close: c.close * usdInr,
+                  timestamp: c.timestamp,
+                }))}
+              >
+                <CandlestickChart height={200} width={width - 72}>
+                  <CandlestickChart.Candles
+                    positiveColor={COLORS.green}
+                    negativeColor={COLORS.red}
+                  />
+                  <CandlestickChart.Crosshair>
+                    <CandlestickChart.Tooltip />
+                  </CandlestickChart.Crosshair>
+                </CandlestickChart>
+                <View className="flex-row justify-between mt-2">
+                  <CandlestickChart.PriceText
+                    type="open"
+                    style={{ fontSize: 11, color: COLORS.textSecondary }}
+                  />
+                  <CandlestickChart.PriceText
+                    type="high"
+                    style={{ fontSize: 11, color: COLORS.green }}
+                  />
+                  <CandlestickChart.PriceText
+                    type="low"
+                    style={{ fontSize: 11, color: COLORS.red }}
+                  />
+                  <CandlestickChart.PriceText
+                    type="close"
+                    style={{ fontSize: 11, color: COLORS.textPrimary }}
+                  />
+                </View>
+              </CandlestickChart.Provider>
+            ) : (
+              <LineChart.Provider
+                data={candles.map((c) => ({
+                  value: c.close * usdInr,
+                  timestamp: c.timestamp,
+                }))}
+              >
+                <LineChart height={200} width={width - 72}>
+                  <LineChart.Path
+                    color={isPositive ? COLORS.green : COLORS.red}
+                  />
+                  <LineChart.CursorCrosshair>
+                    <LineChart.Tooltip />
+                  </LineChart.CursorCrosshair>
+                </LineChart>
+                <LineChart.PriceText
+                  style={{
+                    fontSize: 11,
+                    color: COLORS.textSecondary,
+                    marginTop: 4,
+                  }}
+                />
+              </LineChart.Provider>
+            )}
+          </View>
+
+          {/* Statistics */}
           <View className="bg-surface rounded-2xl p-4 mt-4 border border-border">
             <Text className="text-base font-bold text-primary-content mb-3">
               Statistics
@@ -177,13 +287,12 @@ export default function StockDetailScreen() {
             </View>
           </View>
 
-          {/* Quantity Selector */}
+          {/* Order */}
           <View className="bg-surface rounded-2xl p-4 mt-4 border border-border">
             <Text className="text-base font-bold text-primary-content mb-3">
               Order
             </Text>
 
-            {/* Owned quantity info */}
             <View className="flex-row items-center justify-between mb-3 bg-background rounded-xl px-3 py-2.5 border border-border">
               <View className="flex-row items-center">
                 <Ionicons
@@ -222,12 +331,35 @@ export default function StockDetailScreen() {
                 </TouchableOpacity>
               </View>
             </View>
+
             <View className="flex-row justify-between mt-3">
               <Text className="text-secondary text-sm">Total Cost</Text>
               <Text className="text-primary-content text-sm font-bold">
                 ₹{totalCost}
               </Text>
             </View>
+
+            {quantity > ownedQuantity && ownedQuantity > 0 && (
+              <View className="flex-row items-center mt-3 bg-red-100 px-3 py-2 rounded-xl">
+                <Ionicons name="warning-outline" size={14} color={COLORS.red} />
+                <Text className="text-danger text-xs ml-2">
+                  You only have {ownedQuantity} shares to sell
+                </Text>
+              </View>
+            )}
+
+            {ownedQuantity === 0 && (
+              <View className="flex-row items-center mt-3 bg-orange-50 px-3 py-2 rounded-xl">
+                <Ionicons
+                  name="information-circle-outline"
+                  size={14}
+                  color={COLORS.primary}
+                />
+                <Text className="text-primary text-xs ml-2">
+                  You don't own any shares of {symbol}
+                </Text>
+              </View>
+            )}
           </View>
 
           <View className="h-6" />
