@@ -18,6 +18,7 @@ const POLL_INTERVAL = 30000; // 30 seconds
 
 export default function MarketScreen() {
   const cash = usePortfolioStore((state) => state.cash);
+  const updatePrices = usePortfolioStore((state) => state.updatePrices);
 
   const [marketOpen, setMarketOpen] = useState(isUSMarketOpen());
 
@@ -41,6 +42,10 @@ export default function MarketScreen() {
         setStocks(data);
         setError(false);
         setLastUpdated(new Date());
+        // update holding prices in store
+        data.forEach((stock) => {
+          updatePrices(stock.symbol, stock.price);
+        });
       } else {
         setError(true);
       }
@@ -49,7 +54,7 @@ export default function MarketScreen() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [updatePrices]);
 
   useEffect(() => {
     loadStocks();
