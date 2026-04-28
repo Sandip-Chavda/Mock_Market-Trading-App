@@ -19,7 +19,14 @@ const POLL_INTERVAL = 30000; // 30 seconds
 export default function MarketScreen() {
   const cash = usePortfolioStore((state) => state.cash);
 
-  const marketOpen = isUSMarketOpen();
+  const [marketOpen, setMarketOpen] = useState(isUSMarketOpen());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMarketOpen(isUSMarketOpen());
+    }, 60000); // check every minute
+    return () => clearInterval(interval);
+  }, []);
 
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [search, setSearch] = useState("");
