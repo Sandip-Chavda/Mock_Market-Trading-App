@@ -23,6 +23,7 @@ type PortfolioState = {
   cash: number;
   holdings: Holding[];
   orders: Order[];
+  realizedPnl: number;
   buyStock: (
     symbol: string,
     name: string,
@@ -43,15 +44,14 @@ export const usePortfolioStore = create<PortfolioState>((set, get) => ({
   cash: 100000,
   holdings: [],
   orders: [],
+  realizedPnl: 0,
 
   buyStock: (symbol, name, price, quantity) => {
     const total = price * quantity;
     const { cash, holdings, orders } = get();
-
     if (total > cash) return "Insufficient balance";
 
     const existingHolding = holdings.find((h) => h.symbol === symbol);
-
     const updatedHoldings = existingHolding
       ? holdings.map((h) =>
           h.symbol === symbol
@@ -86,19 +86,18 @@ export const usePortfolioStore = create<PortfolioState>((set, get) => ({
       holdings: updatedHoldings,
       orders: [newOrder, ...orders],
     });
-
     return null;
   },
 
   sellStock: (symbol, name, price, quantity) => {
-    const { holdings, cash, orders } = get();
+    const { holdings, cash, orders, realizedPnl } = get();
     const holding = holdings.find((h) => h.symbol === symbol);
-
     if (!holding) return "You don't own this stock";
     if (holding.quantity < quantity)
       return `You only have ${holding.quantity} shares`;
 
     const total = price * quantity;
+    const realizedGain = (price - holding.avgPrice) * quantity;
 
     const updatedHoldings =
       holding.quantity === quantity
@@ -122,8 +121,8 @@ export const usePortfolioStore = create<PortfolioState>((set, get) => ({
       cash: cash + total,
       holdings: updatedHoldings,
       orders: [newOrder, ...orders],
+      realizedPnl: realizedPnl + realizedGain,
     });
-
     return null;
   },
 
@@ -140,6 +139,7 @@ export const usePortfolioStore = create<PortfolioState>((set, get) => ({
       cash: 100000,
       holdings: [],
       orders: [],
+      realizedPnl: 0,
     });
   },
 }));

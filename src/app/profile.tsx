@@ -57,6 +57,7 @@ function SettingRow({ icon, label, value, onPress, danger }: SettingRowProps) {
 
 export default function ProfileScreen() {
   const { cash, holdings, orders, resetPortfolio } = usePortfolioStore();
+  const realizedPnl = usePortfolioStore((state) => state.realizedPnl);
 
   const investedValue = holdings.reduce(
     (sum, h) => sum + h.avgPrice * h.quantity,
@@ -141,6 +142,55 @@ export default function ProfileScreen() {
                 {orders.length}
               </Text>
             </View>
+          </View>
+        </View>
+
+        {/* P&L Breakdown Card */}
+        <View className="bg-surface rounded-2xl p-4 border border-border mb-4">
+          <Text className="text-base font-bold text-primary-content mb-3">
+            P&L Breakdown
+          </Text>
+
+          <View className="flex-row justify-between mb-3">
+            <View className="flex-1 mr-2">
+              <Text className="text-xs text-secondary">Unrealized P&L</Text>
+              <Text
+                className={`text-base font-bold mt-1 ${totalPnl > 0 ? "text-success" : totalPnl < 0 ? "text-danger" : "text-primary-content"}`}
+              >
+                {totalPnl > 0 ? "+" : totalPnl < 0 ? "-" : ""}₹
+                {formatINR(Math.abs(totalPnl), 0)}
+              </Text>
+              <Text className="text-xs text-secondary mt-0.5">
+                Open positions
+              </Text>
+            </View>
+            <View className="w-px bg-border" />
+            <View className="flex-1 ml-2">
+              <Text className="text-xs text-secondary">Realized P&L</Text>
+              <Text
+                className={`text-base font-bold mt-1 ${realizedPnl > 0 ? "text-success" : realizedPnl < 0 ? "text-danger" : "text-primary-content"}`}
+              >
+                {realizedPnl > 0 ? "+" : realizedPnl < 0 ? "-" : ""}₹
+                {formatINR(Math.abs(realizedPnl), 0)}
+              </Text>
+              <Text className="text-xs text-secondary mt-0.5">
+                Closed trades
+              </Text>
+            </View>
+          </View>
+
+          <View className="h-px bg-border mb-3" />
+
+          <View className="flex-row justify-between">
+            <Text className="text-sm text-secondary font-medium">
+              Total P&L
+            </Text>
+            <Text
+              className={`text-sm font-bold ${totalPnl + realizedPnl >= 0 ? "text-success" : "text-danger"}`}
+            >
+              {totalPnl + realizedPnl >= 0 ? "+" : "-"}₹
+              {formatINR(Math.abs(totalPnl + realizedPnl), 0)}
+            </Text>
           </View>
         </View>
 
