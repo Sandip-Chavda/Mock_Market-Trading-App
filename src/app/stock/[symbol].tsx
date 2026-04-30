@@ -2,6 +2,7 @@ import { COLORS } from "@/constants/theme";
 import { usePortfolioStore } from "@/store/portfolioStore";
 import { CandleData, fetchUSDINR } from "@/utils/fetchQuote";
 import { formatINR } from "@/utils/formatCurrency";
+import { generateMockCandles } from "@/utils/generateCandles";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -54,10 +55,12 @@ export default function StockDetailScreen() {
       setChartLoading(true);
       const rate = await fetchUSDINR();
       setUsdInr(rate);
+      const mockCandles = generateMockCandles(priceNum, selectedFilter);
+      setCandles(mockCandles);
       setChartLoading(false);
     };
     loadChart();
-  }, [selectedFilter, symbol]);
+  }, [selectedFilter, symbol, priceNum]);
 
   const handleBuy = () => {
     const error = buyStock(symbol, name, priceNum, quantity);
