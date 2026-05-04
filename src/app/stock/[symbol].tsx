@@ -1,6 +1,6 @@
 import { COLORS } from "@/constants/theme";
 import { usePortfolioStore } from "@/store/portfolioStore";
-import { CandleData, fetchUSDINR } from "@/utils/fetchQuote";
+import { CandleData, fetchQuote, fetchUSDINR } from "@/utils/fetchQuote";
 import { formatINR } from "@/utils/formatCurrency";
 import { generateMockCandles } from "@/utils/generateCandles";
 import { Ionicons } from "@expo/vector-icons";
@@ -33,6 +33,7 @@ export default function StockDetailScreen() {
   const { buyStock, sellStock } = usePortfolioStore();
   const { width } = useWindowDimensions();
   const holdings = usePortfolioStore((state) => state.holdings);
+  const updatePrices = usePortfolioStore((state) => state.updatePrices);
 
   const [selectedFilter, setSelectedFilter] = useState("1D");
   const [quantity, setQuantity] = useState(1);
@@ -44,11 +45,16 @@ export default function StockDetailScreen() {
   const currentHolding = holdings.find((h) => h.symbol === symbol);
   const ownedQuantity = currentHolding?.quantity ?? 0;
 
-  const isPositive = parseFloat(change) >= 0;
   const priceNum = parseFloat(price);
   const changeNum = parseFloat(change);
   const changePercentNum = parseFloat(changePercent);
-  const totalCost = formatINR(priceNum * quantity);
+
+  const [livePrice, setLivePrice] = useState(priceNum);
+  const [liveChange, setLiveChange] = useState(changeNum);
+  const [liveChangePercent, setLiveChangePercent] = useState(changePercentNum);
+  const liveIsPositive = liveChange >= 0;
+
+  const totalCost = formatINR(livePrice * quantity);
 
   useEffect(() => {
     const loadChart = async () => {
@@ -61,6 +67,23 @@ export default function StockDetailScreen() {
     };
     loadChart();
   }, [selectedFilter, symbol, priceNum]);
+
+  useEffect(() => {
+    const refreshPrice = async () => {
+      const rate = await fetchUSDINR();
+      const quote = await fetchQuote(symbol);
+      if (quote && quote.c > 0) {
+        setLivePrice(parseFloat((quote.c * rate).toFixed(2)));
+        setLiveChange(parseFloat((quote.d * rate).toFixed(2)));
+        setLiveChangePercent(parseFloat(quote.dp.toFixed(2)));
+        updatePrices(symbol, parseFloat((quote.c * rate).toFixed(2)));
+      }
+    };
+
+    refreshPrice();
+    const interval = setInterval(refreshPrice, 30000);
+    return () => clearInterval(interval);
+  }, [symbol]);
 
   const handleBuy = () => {
     const error = buyStock(symbol, name, priceNum, quantity);
@@ -108,21 +131,21 @@ export default function StockDetailScreen() {
         <View className="px-5 pt-5">
           {/* Price */}
           <Text className="text-4xl font-extrabold text-primary-content">
-            ₹{formatINR(priceNum)}
+            ₹{formatINR(livePrice)}
           </Text>
           <View
-            className={`flex-row items-center mt-1 self-start px-2 py-1 rounded-lg ${isPositive ? "bg-green-100" : "bg-red-100"}`}
+            className={`flex-row items-center mt-1 self-start px-2 py-1 rounded-lg ${liveIsPositive ? "bg-green-100" : "bg-red-100"}`}
           >
             <Ionicons
-              name={isPositive ? "arrow-up" : "arrow-down"}
+              name={liveIsPositive ? "arrow-up" : "arrow-down"}
               size={13}
-              color={isPositive ? COLORS.green : COLORS.red}
+              color={liveIsPositive ? COLORS.green : COLORS.red}
             />
             <Text
-              className={`text-sm font-semibold ml-1 ${isPositive ? "text-success" : "text-danger"}`}
+              className={`text-sm font-semibold ml-1 ${liveIsPositive ? "text-success" : "text-danger"}`}
             >
-              ₹{formatINR(Math.abs(changeNum))} (
-              {Math.abs(changePercentNum).toFixed(2)}%)
+              ₹{formatINR(Math.abs(liveChange))} (
+              {Math.abs(liveChangePercent).toFixed(2)}%)
             </Text>
           </View>
 
@@ -242,7 +265,7 @@ export default function StockDetailScreen() {
               >
                 <LineChart height={200} width={width - 72}>
                   <LineChart.Path
-                    color={isPositive ? COLORS.green : COLORS.red}
+                    color={liveIsPositive ? COLORS.green : COLORS.red}
                   />
                   <LineChart.CursorCrosshair>
                     <LineChart.Tooltip />
@@ -267,25 +290,25 @@ export default function StockDetailScreen() {
             <View className="flex-row justify-between mb-2">
               <Text className="text-secondary text-sm">Open</Text>
               <Text className="text-primary-content text-sm font-semibold">
-                ₹{formatINR(priceNum - changeNum)}
+                ₹{formatINR(livePrice - liveChange)}
               </Text>
             </View>
             <View className="flex-row justify-between mb-2">
               <Text className="text-secondary text-sm">Day High</Text>
               <Text className="text-primary-content text-sm font-semibold">
-                ₹{formatINR(priceNum * 1.02)}
+                ₹{formatINR(livePrice * 1.02)}
               </Text>
             </View>
             <View className="flex-row justify-between mb-2">
               <Text className="text-secondary text-sm">Day Low</Text>
               <Text className="text-primary-content text-sm font-semibold">
-                ₹{formatINR(priceNum * 0.98)}
+                ₹{formatINR(livePrice * 0.98)}
               </Text>
             </View>
             <View className="flex-row justify-between">
               <Text className="text-secondary text-sm">52W High</Text>
               <Text className="text-primary-content text-sm font-semibold">
-                ₹{formatINR(priceNum * 1.35)}
+                ₹{formatINR(livePrice * 1.35)}
               </Text>
             </View>
           </View>
