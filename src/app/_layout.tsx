@@ -1,10 +1,22 @@
 import { COLORS } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
+import { useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "../../global.css";
+import OnboardingScreen from "./onboarding";
 
 export default function RootLayout() {
+  const [showOnboarding, setShowOnboarding] = useState(true);
+
+  if (showOnboarding) {
+    return (
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <OnboardingScreen onDone={() => setShowOnboarding(false)} />
+      </GestureHandlerRootView>
+    );
+  }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Tabs
@@ -68,6 +80,16 @@ export default function RootLayout() {
             title: "Stock Details",
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="analytics-outline" color={color} size={size} />
+            ),
+            href: null, // Hide from tab bar
+          }}
+        />
+        <Tabs.Screen
+          name="onboarding"
+          options={{
+            title: "Onboarding",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="book-outline" color={color} size={size} />
             ),
             href: null, // Hide from tab bar
           }}
