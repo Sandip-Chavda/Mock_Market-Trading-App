@@ -1,3 +1,4 @@
+import MarketCountdown from "@/components/MarketCountdown";
 import { COLORS } from "@/constants/theme";
 import { usePortfolioStore } from "@/store/portfolioStore";
 import { formatINR } from "@/utils/formatCurrency";
@@ -192,6 +193,14 @@ export default function ProfileScreen() {
               {formatINR(Math.abs(totalPnl + realizedPnl), 0)}
             </Text>
           </View>
+        </View>
+
+        {/* Market Status Card */}
+        <View className="bg-surface rounded-2xl p-4 border border-border mb-4">
+          <Text className="text-base font-bold text-primary-content mb-3">
+            Market Status
+          </Text>
+          <MarketCountdown />
         </View>
 
         {/* Account Section */}

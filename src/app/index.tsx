@@ -1,3 +1,4 @@
+import MarketCountdown from "@/components/MarketCountdown";
 import PortfolioSummaryCard from "@/components/PortfolioSummaryCard";
 import SearchBar from "@/components/SearchBar";
 import StockCard, { Stock } from "@/components/StockCard";
@@ -92,7 +93,7 @@ export default function MarketScreen() {
           </View>
         </View>
         <SearchBar value={search} onChangeText={setSearch} />
-        {lastUpdated && (
+        {/* {lastUpdated && (
           <View className="flex-row items-center justify-between mt-2">
             <Text className="text-xs text-secondary">
               Updated{" "}
@@ -113,6 +114,19 @@ export default function MarketScreen() {
                 USA {marketOpen ? "Market Open" : "Market Closed"}
               </Text>
             </View>
+          </View>
+        )} */}
+
+        {lastUpdated && (
+          <View className="flex-row items-center justify-between mt-2">
+            <Text className="text-xs text-secondary">
+              Last Updated{" "}
+              {lastUpdated.toLocaleTimeString("en-IN", {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </Text>
+            <MarketCountdown compact={true} />
           </View>
         )}
       </View>
