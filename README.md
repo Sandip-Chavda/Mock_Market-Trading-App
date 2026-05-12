@@ -134,12 +134,16 @@ Live prices update only during market hours. Outside hours, last closing prices 
 
 ## 🗺️ Future Roadmap
 
-- [ ] Indian NSE/BSE stocks (requires paid API)
-- [ ] Push notifications for market open/close
-- [ ] Price alerts
-- [ ] Dark mode
-- [ ] Multiple portfolio support
-- [ ] Stock news feed
+1. Disclaimer popup — on every cold start, one tap to dismiss, covers: learning purpose only, charts are demo, not real money, not financial advice
+2. Light/Dark mode toggle — persist with AsyncStorage
+3. Price alerts — notify when stock crosses a price you set
+4. Stock news feed — Finnhub has a free news endpoint, show news per stock on detail screen
+5. Portfolio chart — line chart showing portfolio value over time on Portfolio screen
+6. Watchlist — save favourite stocks separately from full market list
+7. Search improvements — filter by gainers, losers, most active
+8. Share portfolio — screenshot of P&L card to share on WhatsApp/LinkedIn
+9. Multiple portfolios — create separate portfolios for different strategies
+10. Haptic feedback — subtle vibration on buy/sell confirmation
 
 ---
 
