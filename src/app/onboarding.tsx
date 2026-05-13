@@ -111,7 +111,7 @@ export default function OnboardingScreen({ onDone }: Props) {
                 style={{ backgroundColor: "#FFE0C2" }}
               >
                 <Image
-                  source={require("../../assets/images/icon.png")}
+                  source={require("../../assets/images/mmicon1.png")}
                   style={{ width: 224, height: 224, borderRadius: 112 }}
                   resizeMode="cover"
                 />

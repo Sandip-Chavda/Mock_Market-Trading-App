@@ -4,14 +4,14 @@
     "slug": "MockMarket",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/mmicon1.png",
     "scheme": "mockmarket",
     "userInterfaceStyle": "light",
     "android": {
       "package": "com.sandipchavda.mockmarket",
       "adaptiveIcon": {
         "backgroundColor": "#f27c22",
-        "foregroundImage": "./assets/images/icon.png"
+        "foregroundImage": "./assets/images/mmicon1.png"
       },
       "predictiveBackGestureEnabled": false
     },
@@ -25,7 +25,7 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#f27c22",
-          "image": "./assets/images/icon.png",
+          "image": "./assets/images/mmicon1.png",
           "imageWidth": 500,
           "resizeMode": "contain"
         }

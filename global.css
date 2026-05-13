@@ -3,28 +3,54 @@
 @import "tailwindcss/utilities.css";
 @import "nativewind/theme";
 
+/* ─── Class-based dark mode (driven by Zustand isDark → .dark on root) ─── */
+@custom-variant dark (&:is(.dark *));
+
+/* ─── Light mode token defaults ──────────────────────────────────────────── */
+:root {
+  --color-background: #f8f9fa;
+  --color-surface: #ffffff;
+  --color-border: #e8ecf0;
+  --color-primary-text: #1a1a2e;
+  --color-secondary-text: #6b7280;
+}
+
+/* ─── Dark mode token overrides ──────────────────────────────────────────── */
+.dark {
+  --color-background: #0d1117;
+  --color-surface: #161b22;
+  --color-border: #21262d;
+  --color-primary-text: #ffffff;
+  --color-secondary-text: #8b949e;
+}
+
+/* ─── Semantic utilities (auto-switch via CSS vars — no dark: needed) ─────── */
 @layer utilities {
   .bg-background {
-    background-color: #f8f9fa;
+    background-color: var(--color-background);
   }
   .bg-surface {
-    background-color: #ffffff;
+    background-color: var(--color-surface);
   }
+  .border-border {
+    border-color: var(--color-border);
+  }
+  .text-primary-content {
+    color: var(--color-primary-text);
+  }
+  .text-secondary {
+    color: var(--color-secondary-text);
+  }
+
+  /* ─── Fixed colors — identical in both modes ─────────────────────────── */
   .bg-primary {
     background-color: #ff6b00;
   }
   .bg-primary-light {
     background-color: #ff8c00;
   }
-
   .text-primary {
     color: #ff6b00;
-  }
-  .text-primary-content {
-    color: #1a1a2e;
-  }
-  .text-secondary {
-    color: #6b7280;
   }
   .text-success {
     color: #00a86b;
@@ -32,11 +58,6 @@
   .text-danger {
     color: #ff3d57;
   }
-
-  .border-border {
-    border-color: #e8ecf0;
-  }
-
   .bg-success {
     background-color: #00a86b;
   }
