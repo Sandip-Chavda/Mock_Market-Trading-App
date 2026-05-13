@@ -3,8 +3,8 @@ import { COLORS } from "@/constants/theme";
 import { useThemeStore } from "@/store/themeStore";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import { useState } from "react";
-import { View } from "react-native";
+import { useColorScheme } from "nativewind";
+import { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "../../global.css";
 import OnboardingScreen from "./onboarding";
@@ -13,8 +13,11 @@ export default function RootLayout() {
   const [showOnboarding, setShowOnboarding] = useState(true);
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const isDark = useThemeStore((state) => state.isDark);
+  const { setColorScheme } = useColorScheme();
 
-  const rootClass = `flex-1${isDark ? " dark" : ""}`;
+  useEffect(() => {
+    setColorScheme(isDark ? "dark" : "light");
+  }, [isDark]);
 
   const tabBarStyle = {
     backgroundColor: isDark ? "#161B22" : COLORS.surface,
@@ -28,95 +31,91 @@ export default function RootLayout() {
   if (showOnboarding) {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <View className={rootClass}>
-          <OnboardingScreen
-            onDone={() => {
-              setShowOnboarding(false);
-              setShowDisclaimer(true);
-            }}
-          />
-        </View>
+        <OnboardingScreen
+          onDone={() => {
+            setShowOnboarding(false);
+            setShowDisclaimer(true);
+          }}
+        />
       </GestureHandlerRootView>
     );
   }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <View className={rootClass}>
-        <DisclaimerModal
-          visible={showDisclaimer}
-          onAccept={() => setShowDisclaimer(false)}
-        />
-        <Tabs
-          screenOptions={{
-            headerShown: false,
-            tabBarStyle,
-            tabBarActiveTintColor: COLORS.primary,
-            tabBarInactiveTintColor: isDark ? "#8B949E" : COLORS.textSecondary,
-            tabBarLabelStyle: {
-              fontSize: 11,
-              fontWeight: "600",
-            },
+      <DisclaimerModal
+        visible={showDisclaimer}
+        onAccept={() => setShowDisclaimer(false)}
+      />
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          tabBarStyle,
+          tabBarActiveTintColor: COLORS.primary,
+          tabBarInactiveTintColor: isDark ? "#8B949E" : COLORS.textSecondary,
+          tabBarLabelStyle: {
+            fontSize: 11,
+            fontWeight: "600",
+          },
+        }}
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            title: "Market",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="trending-up" color={color} size={size} />
+            ),
           }}
-        >
-          <Tabs.Screen
-            name="index"
-            options={{
-              title: "Market",
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="trending-up" color={color} size={size} />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="portfolio"
-            options={{
-              title: "Portfolio",
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="pie-chart-outline" color={color} size={size} />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="orders"
-            options={{
-              title: "Orders",
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="receipt-outline" color={color} size={size} />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="profile"
-            options={{
-              title: "Profile",
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="person-outline" color={color} size={size} />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="stock/[symbol]"
-            options={{
-              title: "Stock Details",
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="analytics-outline" color={color} size={size} />
-              ),
-              href: null,
-            }}
-          />
-          <Tabs.Screen
-            name="onboarding"
-            options={{
-              title: "Onboarding",
-              tabBarIcon: ({ color, size }) => (
-                <Ionicons name="book-outline" color={color} size={size} />
-              ),
-              href: null,
-            }}
-          />
-        </Tabs>
-      </View>
+        />
+        <Tabs.Screen
+          name="portfolio"
+          options={{
+            title: "Portfolio",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="pie-chart-outline" color={color} size={size} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="orders"
+          options={{
+            title: "Orders",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="receipt-outline" color={color} size={size} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            title: "Profile",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="person-outline" color={color} size={size} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="stock/[symbol]"
+          options={{
+            title: "Stock Details",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="analytics-outline" color={color} size={size} />
+            ),
+            href: null,
+          }}
+        />
+        <Tabs.Screen
+          name="onboarding"
+          options={{
+            title: "Onboarding",
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="book-outline" color={color} size={size} />
+            ),
+            href: null,
+          }}
+        />
+      </Tabs>
     </GestureHandlerRootView>
   );
 }

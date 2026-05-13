@@ -3,46 +3,34 @@
 @import "tailwindcss/utilities.css";
 @import "nativewind/theme";
 
-/* ─── Class-based dark mode (driven by Zustand isDark → .dark on root) ─── */
-@custom-variant dark (&:is(.dark *));
-
-/* ─── Light mode token defaults ──────────────────────────────────────────── */
-:root {
-  --color-background: #f8f9fa;
-  --color-surface: #ffffff;
-  --color-border: #e8ecf0;
-  --color-primary-text: #1a1a2e;
-  --color-secondary-text: #6b7280;
-}
-
-/* ─── Dark mode token overrides ──────────────────────────────────────────── */
-.dark {
-  --color-background: #0d1117;
-  --color-surface: #161b22;
-  --color-border: #21262d;
-  --color-primary-text: #ffffff;
-  --color-secondary-text: #8b949e;
-}
-
-/* ─── Semantic utilities (auto-switch via CSS vars — no dark: needed) ─────── */
 @layer utilities {
+  /* Semantic — light mode defaults */
   .bg-background {
-    background-color: var(--color-background);
+    background-color: #f8f9fa;
   }
   .bg-surface {
-    background-color: var(--color-surface);
+    background-color: #ffffff;
   }
   .border-border {
-    border-color: var(--color-border);
+    border-color: #e8ecf0;
   }
   .text-primary-content {
-    color: var(--color-primary-text);
+    color: #1a1a2e;
   }
   .text-secondary {
-    color: var(--color-secondary-text);
+    color: #6b7280;
+  }
+  .bg-success-subtle {
+    background-color: #dcfce7;
+  }
+  .bg-danger-subtle {
+    background-color: #fee2e2;
+  }
+  .bg-warn-subtle {
+    background-color: #fff7ed;
   }
 
-  /* ─── Fixed colors — identical in both modes ─────────────────────────── */
+  /* Fixed — same in both modes */
   .bg-primary {
     background-color: #ff6b00;
   }
@@ -63,5 +51,33 @@
   }
   .bg-danger {
     background-color: #ff3d57;
+  }
+}
+
+/* Dark mode overrides — NativeWind activates this block via colorScheme.set('dark') */
+@media (prefers-color-scheme: dark) {
+  .bg-background {
+    background-color: #0d1117;
+  }
+  .bg-surface {
+    background-color: #161b22;
+  }
+  .border-border {
+    border-color: #21262d;
+  }
+  .text-primary-content {
+    color: #ffffff;
+  }
+  .text-secondary {
+    color: #8b949e;
+  }
+  .bg-success-subtle {
+    background-color: #0a2e1a;
+  }
+  .bg-danger-subtle {
+    background-color: #2e0a0f;
+  }
+  .bg-warn-subtle {
+    background-color: #2e1500;
   }
 }

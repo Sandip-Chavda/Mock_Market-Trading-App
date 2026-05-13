@@ -1,12 +1,14 @@
 import MarketCountdown from "@/components/MarketCountdown";
 import { COLORS } from "@/constants/theme";
 import { usePortfolioStore } from "@/store/portfolioStore";
+import { useThemeStore } from "@/store/themeStore";
 import { formatINR } from "@/utils/formatCurrency";
 import { Ionicons } from "@expo/vector-icons";
 import {
   Alert,
   ScrollView,
   StatusBar,
+  Switch,
   Text,
   TouchableOpacity,
   View,
@@ -18,9 +20,19 @@ type SettingRowProps = {
   value?: string;
   onPress?: () => void;
   danger?: boolean;
+  rightElement?: React.ReactNode;
 };
 
-function SettingRow({ icon, label, value, onPress, danger }: SettingRowProps) {
+function SettingRow({
+  icon,
+  label,
+  value,
+  onPress,
+  danger,
+  rightElement,
+}: SettingRowProps) {
+  const isDark = useThemeStore((state) => state.isDark);
+
   return (
     <TouchableOpacity
       className="flex-row items-center justify-between py-4 border-b border-border"
@@ -29,7 +41,9 @@ function SettingRow({ icon, label, value, onPress, danger }: SettingRowProps) {
     >
       <View className="flex-row items-center">
         <View
-          className={`w-8 h-8 rounded-lg items-center justify-center mr-3 ${danger ? "bg-red-100" : "bg-background"}`}
+          className={`w-8 h-8 rounded-lg items-center justify-center mr-3 ${
+            danger ? "bg-danger-subtle" : "bg-background"
+          }`}
         >
           <Ionicons
             name={icon}
@@ -38,18 +52,23 @@ function SettingRow({ icon, label, value, onPress, danger }: SettingRowProps) {
           />
         </View>
         <Text
-          className={`text-base font-medium ${danger ? "text-danger" : "text-primary-content"}`}
+          className={`text-base font-medium ${
+            danger ? "text-danger" : "text-primary-content"
+          }`}
         >
           {label}
         </Text>
       </View>
-      {value ? (
+
+      {rightElement ? (
+        rightElement
+      ) : value ? (
         <Text className="text-secondary text-sm">{value}</Text>
       ) : onPress ? (
         <Ionicons
           name="chevron-forward"
           size={18}
-          color={COLORS.textSecondary}
+          color={isDark ? "#8B949E" : COLORS.textSecondary}
         />
       ) : null}
     </TouchableOpacity>
@@ -59,6 +78,7 @@ function SettingRow({ icon, label, value, onPress, danger }: SettingRowProps) {
 export default function ProfileScreen() {
   const { cash, holdings, orders, resetPortfolio } = usePortfolioStore();
   const realizedPnl = usePortfolioStore((state) => state.realizedPnl);
+  const { isDark, toggleTheme } = useThemeStore();
 
   const investedValue = holdings.reduce(
     (sum, h) => sum + h.avgPrice * h.quantity,
@@ -92,7 +112,10 @@ export default function ProfileScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <StatusBar barStyle="dark-content" backgroundColor="#F8F9FA" />
+      <StatusBar
+        barStyle={isDark ? "light-content" : "dark-content"}
+        backgroundColor={isDark ? "#0D1117" : "#F8F9FA"}
+      />
 
       {/* Header */}
       <View className="bg-surface pt-14 px-5 pb-4 border-b border-border">
@@ -151,7 +174,6 @@ export default function ProfileScreen() {
           <Text className="text-base font-bold text-primary-content mb-3">
             P&L Breakdown
           </Text>
-
           <View className="flex-row justify-between mb-3">
             <View className="flex-1 mr-2">
               <Text className="text-xs text-secondary">Unrealized P&L</Text>
@@ -179,9 +201,7 @@ export default function ProfileScreen() {
               </Text>
             </View>
           </View>
-
           <View className="h-px bg-border mb-3" />
-
           <View className="flex-row justify-between">
             <Text className="text-sm text-secondary font-medium">
               Total P&L
@@ -201,6 +221,28 @@ export default function ProfileScreen() {
             Market Status
           </Text>
           <MarketCountdown />
+        </View>
+
+        {/* Appearance Section */}
+        <View className="bg-surface rounded-2xl px-4 border border-border mb-4">
+          <Text className="text-xs text-secondary font-semibold pt-4 pb-2">
+            APPEARANCE
+          </Text>
+          <SettingRow
+            icon="moon-outline"
+            label="Dark Mode"
+            rightElement={
+              <Switch
+                value={isDark}
+                onValueChange={toggleTheme}
+                trackColor={{
+                  false: "#E8ECF0",
+                  true: COLORS.primary,
+                }}
+                thumbColor={COLORS.white}
+              />
+            }
+          />
         </View>
 
         {/* Account Section */}
