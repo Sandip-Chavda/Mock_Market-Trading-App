@@ -6,18 +6,22 @@ import { COLORS } from "@/constants/theme";
 import { usePortfolioStore } from "@/store/portfolioStore";
 import { fetchAllStocks } from "@/utils/marketData";
 import { isUSMarketOpen } from "@/utils/marketStatus";
+import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
   StatusBar,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 
 const POLL_INTERVAL = 30000; // 30 seconds
 
 export default function MarketScreen() {
+  const router = useRouter();
+
   const cash = usePortfolioStore((state) => state.cash);
   const updatePrices = usePortfolioStore((state) => state.updatePrices);
 
@@ -88,9 +92,12 @@ export default function MarketScreen() {
               Mock Market
             </Text>
           </View>
-          <View className="bg-primary w-10 h-10 rounded-full items-center justify-center">
+          <TouchableOpacity
+            onPress={() => router.push("/profile")}
+            className="bg-primary w-10 h-10 rounded-full items-center justify-center"
+          >
             <Text className="text-white font-bold text-base">S</Text>
-          </View>
+          </TouchableOpacity>
         </View>
         <SearchBar value={search} onChangeText={setSearch} />
         {/* {lastUpdated && (

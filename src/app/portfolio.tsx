@@ -2,9 +2,18 @@ import { COLORS } from "@/constants/theme";
 import { Holding, usePortfolioStore } from "@/store/portfolioStore";
 import { formatINR } from "@/utils/formatCurrency";
 import { Ionicons } from "@expo/vector-icons";
-import { FlatList, StatusBar, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import {
+  FlatList,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 function HoldingCard({ holding }: { holding: Holding }) {
+  const router = useRouter();
+
   const isProfit = holding.currentPrice >= holding.avgPrice;
   const pnl = (holding.currentPrice - holding.avgPrice) * holding.quantity;
   const pnlPercent =
@@ -12,7 +21,10 @@ function HoldingCard({ holding }: { holding: Holding }) {
   const currentValue = holding.currentPrice * holding.quantity;
 
   return (
-    <View className="bg-surface rounded-xl p-4 mb-2.5 border border-border">
+    <TouchableOpacity
+      // onPress={() => router.push(`/stock/${holding.symbol}`)}
+      className="bg-surface rounded-xl p-4 mb-2.5 border border-border"
+    >
       <View className="flex-row justify-between items-center">
         <View className="flex-row items-center">
           <View className="w-10 h-10 rounded-lg bg-background items-center justify-center mr-3 border border-border">
@@ -74,7 +86,7 @@ function HoldingCard({ holding }: { holding: Holding }) {
           </Text>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 

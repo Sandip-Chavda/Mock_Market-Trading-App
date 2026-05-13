@@ -90,7 +90,17 @@ export default function StockDetailScreen() {
     if (error) {
       Alert.alert("Cannot Buy", error);
     } else {
-      Alert.alert("Success", `Bought ${quantity} share(s) of ${symbol}`);
+      Alert.alert("Success", `Bought ${quantity} share(s) of ${symbol}`, [
+        {
+          text: "OK",
+          style: "cancel",
+        },
+        {
+          text: "Go to Portfolio",
+          onPress: () => router.push("/portfolio"),
+          style: "default",
+        },
+      ]);
     }
   };
 

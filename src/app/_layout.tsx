@@ -63,8 +63,12 @@ export default function RootLayout() {
           name="index"
           options={{
             title: "Market",
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="trending-up" color={color} size={size} />
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons
+                name={focused ? "trending-up" : "trending-up-outline"}
+                color={color}
+                size={size}
+              />
             ),
           }}
         />
@@ -72,8 +76,12 @@ export default function RootLayout() {
           name="portfolio"
           options={{
             title: "Portfolio",
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="pie-chart-outline" color={color} size={size} />
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons
+                name={focused ? "pie-chart" : "pie-chart-outline"}
+                color={color}
+                size={size}
+              />
             ),
           }}
         />
@@ -81,8 +89,12 @@ export default function RootLayout() {
           name="orders"
           options={{
             title: "Orders",
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="receipt-outline" color={color} size={size} />
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons
+                name={focused ? "receipt" : "receipt-outline"}
+                color={color}
+                size={size}
+              />
             ),
           }}
         />
@@ -90,8 +102,12 @@ export default function RootLayout() {
           name="profile"
           options={{
             title: "Profile",
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="person-outline" color={color} size={size} />
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons
+                name={focused ? "person" : "person-outline"}
+                color={color}
+                size={size}
+              />
             ),
           }}
         />
@@ -99,8 +115,12 @@ export default function RootLayout() {
           name="stock/[symbol]"
           options={{
             title: "Stock Details",
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="analytics-outline" color={color} size={size} />
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons
+                name={focused ? "analytics" : "analytics-outline"}
+                color={color}
+                size={size}
+              />
             ),
             href: null,
           }}
@@ -109,8 +129,12 @@ export default function RootLayout() {
           name="onboarding"
           options={{
             title: "Onboarding",
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="book-outline" color={color} size={size} />
+            tabBarIcon: ({ color, size, focused }) => (
+              <Ionicons
+                name={focused ? "book" : "book-outline"}
+                color={color}
+                size={size}
+              />
             ),
             href: null,
           }}
