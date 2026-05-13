@@ -11,6 +11,7 @@ import {
   Switch,
   Text,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
 
@@ -78,7 +79,10 @@ function SettingRow({
 export default function ProfileScreen() {
   const { cash, holdings, orders, resetPortfolio } = usePortfolioStore();
   const realizedPnl = usePortfolioStore((state) => state.realizedPnl);
-  const { isDark, toggleTheme } = useThemeStore();
+  const { toggleTheme } = useThemeStore();
+
+  const scheme = useColorScheme();
+  const isDark = scheme === "dark";
 
   const investedValue = holdings.reduce(
     (sum, h) => sum + h.avgPrice * h.quantity,
@@ -235,10 +239,7 @@ export default function ProfileScreen() {
               <Switch
                 value={isDark}
                 onValueChange={toggleTheme}
-                trackColor={{
-                  false: "#E8ECF0",
-                  true: COLORS.primary,
-                }}
+                trackColor={{ false: "#E8ECF0", true: COLORS.primary }}
                 thumbColor={COLORS.white}
               />
             }

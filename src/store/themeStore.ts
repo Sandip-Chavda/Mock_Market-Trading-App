@@ -1,3 +1,4 @@
+import { Appearance } from "react-native";
 import { create } from "zustand";
 
 type ThemeState = {
@@ -7,5 +8,9 @@ type ThemeState = {
 
 export const useThemeStore = create<ThemeState>((set, get) => ({
   isDark: false,
-  toggleTheme: () => set({ isDark: !get().isDark }),
+  toggleTheme: () => {
+    const next = !get().isDark;
+    set({ isDark: next });
+    Appearance.setColorScheme(next ? "dark" : "light");
+  },
 }));
