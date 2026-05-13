@@ -1,3 +1,4 @@
+import DisclaimerModal from "@/components/DisclaimerModal";
 import { COLORS } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
@@ -8,17 +9,27 @@ import OnboardingScreen from "./onboarding";
 
 export default function RootLayout() {
   const [showOnboarding, setShowOnboarding] = useState(true);
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
 
   if (showOnboarding) {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <OnboardingScreen onDone={() => setShowOnboarding(false)} />
+        <OnboardingScreen
+          onDone={() => {
+            setShowOnboarding(false);
+            setShowDisclaimer(true);
+          }}
+        />
       </GestureHandlerRootView>
     );
   }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      <DisclaimerModal
+        visible={showDisclaimer}
+        onAccept={() => setShowDisclaimer(false)}
+      />
       <Tabs
         screenOptions={{
           headerShown: false,
