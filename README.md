@@ -12,7 +12,68 @@ A paper trading simulator app built with React Native (Expo) that lets you pract
 
 ## 📱 Screenshots
 
-> Add screenshots here after EAS build
+<div align="center">
+
+<table>
+  <tr>
+    <td align="center">
+      <b>Onboarding 1</b><br/>
+      <img src="./assets/screens/OnboardingScreen1.jpg" width="150"/>
+    </td>
+    <td align="center">
+      <b>Onboarding 2</b><br/>
+      <img src="./assets/screens/OnboardingScreen2.jpg" width="150"/>
+    </td>
+    <td align="center">
+      <b>Onboarding 3</b><br/>
+      <img src="./assets/screens/OnboardingScreen3.jpg" width="150"/>
+    </td>
+    <td align="center">
+      <b>Notice Modal</b><br/>
+      <img src="./assets/screens/NoticeModal.jpg" width="150"/>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="center">
+      <b>Market/Home</b><br/>
+      <img src="./assets/screens/MarketScreen.jpg" width="150"/>
+    </td>
+    <td align="center">
+      <b>Portfolio</b><br/>
+      <img src="./assets/screens/PortfolioScreen.jpg" width="150"/>
+    </td>
+    <td align="center">
+      <b>Orders</b><br/>
+      <img src="./assets/screens/OrdersScreen.jpg" width="150"/>
+    </td>
+    <td align="center">
+      <b>Stock Details</b><br/>
+      <img src="./assets/screens/StockDetailsScreen.jpg" width="150"/>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="center">
+      <b>Search</b><br/>
+      <img src="./assets/screens/SearchScreen.jpg" width="150"/>
+    </td>
+    <td align="center">
+      <b>Market/Home Dark</b><br/>
+      <img src="./assets/screens/MarketScreen-Dark.jpg" width="150"/>
+    </td>
+    <td align="center">
+      <b>Stock Details Dark</b><br/>
+      <img src="./assets/screens/StockDetailsScreen-Dark.jpg" width="150"/>
+    </td>
+    <td align="center">
+      <b>Profile Dark</b><br/>
+      <img src="./assets/screens/ProfileScreen-Dark.jpg" width="150"/>
+    </td>
+  </tr>
+</table>
+
+</div>
 
 ---
 
